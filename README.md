@@ -1,3 +1,3 @@
 ### Damn Vulnerable Web Server
 
-Vulnerable Web Server written in C
+Vulnerable Web Server written in C++
