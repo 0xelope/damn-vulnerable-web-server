@@ -91,6 +91,15 @@ void handle_request(int client_socket, const char* request) {
         *query = '\0';
     }
 
+    // 🚨 Special path for viewing logs
+    if (strcmp(clean_path, "logs") == 0) {
+        handle_log_viewer(client_socket, request);  // new function to display /tmp/server.log
+        close(client_socket);
+        free(request_copy);
+        return;
+    }
+    
+
     char file_path[200];
     strcpy(file_path, SERVER_DIR); //buffer overflow
     strcat(file_path, clean_path); //buffer overflow

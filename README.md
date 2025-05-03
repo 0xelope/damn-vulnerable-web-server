@@ -17,3 +17,4 @@ Vulnerable Web Server written in C++
 * Buffer Overflow
 * Path Traversal
 * Uncontrolled format string
+* Command Injection
