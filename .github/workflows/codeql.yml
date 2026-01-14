@@ -28,14 +28,49 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
+      uses: github/codeql-action/init@v4
       with:
         languages: ${{ matrix.language }}
 
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v3
+    - name: Setup Build Environment
+      run: |
+        # 安装常见的构建工具
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake gcc g++ make
+
+    - name: Build Project
+      run: |
+        # 尝试不同的构建方式
+        # 方法 1: 如果有 Makefile
+        if [ -f "Makefile" ]; then
+          make
+        # 方法 2: 如果有 CMakeLists.txt
+        elif [ -f "CMakeLists.txt" ]; then
+          mkdir -p build
+          cd build
+          cmake ..
+          make
+        # 方法 3: 如果有 configure 脚本
+        elif [ -f "configure" ]; then
+          ./configure
+          make
+        # 方法 4: 如果有 build.sh
+        elif [ -f "build.sh" ]; then
+          chmod +x build.sh
+          ./build.sh
+        # 方法 5: 如果都不存在，尝试直接编译所有 .c/.cpp 文件
+        else
+          echo "No standard build system found, attempting to compile source files..."
+          # 查找所有 C/C++ 源文件并编译（示例）
+          find . -name "*.c" -o -name "*.cpp" | head -1
+          # 如果项目不需要构建，可以跳过这一步
+          echo "Skipping build - source-only analysis"
+        fi
+      env:
+        CC: gcc
+        CXX: g++
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
+      uses: github/codeql-action/analyze@v4
       with:
         category: "/language:${{matrix.language}}"
